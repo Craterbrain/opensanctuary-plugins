@@ -63,6 +63,7 @@
   function buildCatalog(ownEntries) {
     var map = {};
     (Array.isArray(ownEntries) ? ownEntries : []).forEach(function (item) {
+      if (!item || typeof item !== 'object') return;
       var abbr = String(item.abbreviation || item.id || '').trim().toUpperCase();
       if (!abbr || !item.sourceKey) return;
       var lang = normalizeLanguage(item.language || 'English');
