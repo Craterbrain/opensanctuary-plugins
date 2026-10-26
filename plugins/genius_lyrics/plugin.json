@@ -2,7 +2,7 @@
   "manifest_version": 1,
   "id": "genius_lyrics",
   "name": "Genius Lyrics",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "publisher": "OpenSanctuary",
   "description": "Search Genius for Christian and worship song lyrics and import them into your song library as formatted slides.",
   "web": {

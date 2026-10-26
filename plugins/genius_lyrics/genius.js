@@ -25,12 +25,30 @@
     return terms ? 'https://genius.com/api/search/multi?q=' + encodeURIComponent(terms) : '';
   }
 
+  var STOP_WORDS = ['the', 'a', 'an', 'of', 'by', 'and', 'in', 'to', 'for', 'with'];
+
+  function words(text) {
+    return String(text).toLowerCase().replace(/[^a-z0-9\u00c0-\uffff]+/g, ' ').split(' ').filter(Boolean);
+  }
+
+  /**
+   * Does a result actually answer the search? At least 60% of the words the user typed (ignoring "the",
+   * "of" ...) have to appear in the result's title, artist or address. Genius always returns *something*,
+   * and listing five unrelated songs for a song it doesn't have is worse than saying nothing was found.
+   */
+  function answersQuery(query, title, artist, url) {
+    var wanted = words(query).filter(function (w) { return STOP_WORDS.indexOf(w) === -1; });
+    if (!wanted.length) return true;
+    var haystack = ' ' + words(title + ' ' + artist + ' ' + url).join(' ') + ' ';
+    var found = wanted.filter(function (w) { return haystack.indexOf(w) !== -1; }).length;
+    return found >= Math.max(1, Math.ceil(wanted.length * 0.6));
+  }
+
   /** Genius multi-search JSON (text) -> [{ id, title, artist, url, thumbnail }]. */
   function parseSearchResponse(jsonText, query) {
     var data;
     try { data = JSON.parse(jsonText); } catch (e) { return []; }
     var sections = (data && data.response && data.response.sections) || [];
-    var alreadyChristian = hasChristianKeyword(query);
     var hits = [];
     var seen = {};
     sections.forEach(function (section) {
@@ -44,10 +62,7 @@
         var title = res.title || 'Unknown Title';
         var artist = res.artist_names || 'Christian Artist';
         if (title.indexOf('Release Calendar') !== -1 || title.indexOf('Tracklist') !== -1) return;
-        var lowerUrl = url.toLowerCase();
-        var relevant = alreadyChristian || hasChristianKeyword(title + ' ' + artist) ||
-          lowerUrl.indexOf('worship') !== -1 || lowerUrl.indexOf('christian') !== -1;
-        if (relevant || hits.length < 5) {
+        if (answersQuery(query, title, artist, url)) {
           seen[url] = true;
           hits.push({
             id: res.id != null ? 'genius_' + res.id : 'genius_' + Math.random().toString(16).slice(2),
@@ -238,7 +253,7 @@
   }
 
   var api = {
-    searchTerms: searchTerms, searchUrl: searchUrl, parseSearchResponse: parseSearchResponse, isGeniusUrl: isGeniusUrl,
+    searchTerms: searchTerms, answersQuery: answersQuery, searchUrl: searchUrl, parseSearchResponse: parseSearchResponse, isGeniusUrl: isGeniusUrl,
     extractCcli: extractCcli, stripHtml: stripHtml, extractLyrics: extractLyrics, lyricsToSong: lyricsToSong, pageToSong: pageToSong
   };
   if (typeof module !== 'undefined' && module.exports) module.exports = api;

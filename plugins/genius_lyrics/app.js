@@ -67,7 +67,7 @@
       if (res.status !== 200) throw new Error('Genius answered ' + res.status);
       var hits = Genius.parseSearchResponse(res.body, query);
       renderHits(hits);
-      setStatus(hits.length ? hits.length + ' result' + (hits.length === 1 ? '' : 's') : 'No Christian lyrics found for “' + query.trim() + '”. Try another title or artist.');
+      setStatus(hits.length ? hits.length + ' result' + (hits.length === 1 ? '' : 's') : 'Genius has no song matching “' + query.trim() + '”. Try the title and artist, or paste its Genius link.');
     } catch (e) {
       setStatus('Search failed: ' + e.message, 'error');
     }
