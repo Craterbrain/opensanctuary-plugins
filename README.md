@@ -4,7 +4,7 @@ Plugins for [OpenSanctuary](https://github.com/Craterbrain/opensanctuary), as so
 
 | Plugin | What it does |
 |---|---|
-| `genius_lyrics` | Search Genius and import lyrics as song slides |
+| `genius_lyrics` | Search LRCLIB and Genius for lyrics, Christian music first (genres from the iTunes store), and import them as song slides |
 | `online_bibles` | Download public-domain Bible translations, look up passages online |
 | `ytdlp` | Download video or audio (yt-dlp, installed and verified by the app) into the Media library |
 | `stock_media` | Search free stock photos (Pexels and Pixabay) and add them as backgrounds |
